@@ -53,7 +53,7 @@ class Dense_layer():
     
     def mutate(self, x):
         m, n = x.shape
-        return np.multiply(x, np.random.uniform(low=-0.1, high=0.1, size=(m, n)))
+        return np.multiply(x, np.random.uniform(low=0.90, high=1.1, size=(m, n)))
 
 
 class Network:

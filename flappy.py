@@ -2,27 +2,16 @@ import pygame
 import random
 import numpy as np
 from bird import Bird, Walls
-pygame.init()
-pygame.font.init()
 
 class game_class:
     def __init__(self, population, networks):
+        pygame.init()
+        pygame.font.init()
+
         self.population = population
         self.networks = networks
-        self.activate = 0
-
         self.screen = pygame.display.set_mode((700, 1000))
-        self.screen.fill((255,255,255))
-
         self.font = pygame.font.Font("projekt/font.TTF", 60)
-        self.birds = []
-        for i in range(self.population):
-            self.birds.append(Bird())
-        self.walls = [Walls(700, 1000), Walls(700, 1000 + 600), Walls(700, 1000 + 1200)]
-        self.curr_wall = 0
-
-        self.auto_move = pygame.USEREVENT + 1
-        pygame.time.set_timer(self.auto_move, 1000 // 60)
 
     def draw(self, new_walls_pos):
         self.screen.fill((255,255,255))
@@ -64,7 +53,8 @@ class game_class:
         return rectangles
     
     def forward(self, data, i):
-        data = data / 1000
+        data[1] = data[1] / 1000
+        data[0] = data[0] / 100
         return self.networks[i].predict(data) > 0.5
     
 
@@ -80,6 +70,9 @@ class game_class:
         self.walls = [Walls(700, 1000), Walls(700, 1000 + 600), Walls(700, 1000 + 1200)]
         self.curr_wall = 0
 
+        self.auto_move = pygame.USEREVENT + 1
+        pygame.time.set_timer(self.auto_move, 1000 // 60)
+
     
     def start(self):
         self.reset()
@@ -90,11 +83,11 @@ class game_class:
             for event in pygame.event.get():
                 if event.type == self.auto_move:
 
-                    if self.activate % 10 == 0:
+                    if self.activate % 2 == 0:
                         move_list = []
                         for i, bird in enumerate(self.birds):
                             data = np.array([
-                                            abs(self.walls[self.curr_wall].middle - self.birds[i].possition[1]),
+                                            self.walls[self.curr_wall].middle - self.birds[i].possition[1],
                                             self.walls[self.curr_wall].up_pos[0] + 200 - self.birds[i].possition[0]
                                             ])
                             move_list.append(self.forward(data, i))
@@ -119,7 +112,7 @@ class game_class:
                                 data_to_return[f"{died}"] = [
                                                        self.networks[i - removed],
                                                        self.birds[i - removed].distance_traveled,
-                                                       round(abs(self.walls[self.curr_wall].middle - self.birds[i - removed].possition[1])),
+                                                       self.walls[self.curr_wall].middle - self.birds[i - removed].possition[1],
                                                        ]
                                 
                                 del self.birds[i - removed]
@@ -144,7 +137,6 @@ class game_class:
                             died += 1
                 
                 pygame.display.update()
-        pygame.quit()
         return data_to_return
 
 

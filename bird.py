@@ -2,7 +2,7 @@ import random
 
 class Bird:
     def __init__(self):
-        self.possition = [100, random.randint(300,600)]
+        self.possition = [100, 500]
         self.velocity = 0
         self.distance_traveled = 0
 

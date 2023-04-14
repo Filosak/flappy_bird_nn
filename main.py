@@ -2,13 +2,13 @@ from flappy import game_class
 from nn import Network
 import numpy as np
 import random
-
 # vars
-population = 10
+population = 100
 nns = []
 for _ in range(population):
     nns.append(Network())
 game = game_class(population, nns)
+
 
 def copy(one_nn):
     network = []
@@ -19,7 +19,7 @@ def copy(one_nn):
     return network
 
 
-for i in range(50):
+for i in range(100000):
     parents = list(game.start().values())[population-3:]
     parents_distance_sum = np.sum(np.array(parents)[:, 1])
 
@@ -30,9 +30,9 @@ for i in range(50):
         fitness.append([parent[0], curr_fittnes + curr_sum])
         curr_sum += curr_fittnes
 
-    children = []
-    for i in range(10):
-        r_num = random.randint(0, 1)
+    children = [parents[-1][0]]
+    for i in range(population-1):
+        r_num = random.uniform(0.0, 0.99)
 
         for fit in fitness:
             if fit[1] < r_num:
@@ -41,5 +41,5 @@ for i in range(50):
             copied_nn = copy(fit[0])
             children.append(Network(copied_nn))
             break
-
+    
     game.networks = children
