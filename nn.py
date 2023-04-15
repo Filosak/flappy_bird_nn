@@ -1,5 +1,4 @@
 import numpy as np
-import random
 np.set_printoptions(suppress=True)
 
 class Dense_layer():
@@ -68,8 +67,6 @@ class Network:
             for layer in setup:
                 m, n = layer.shape
                 self.setup.append(Dense_layer(m, n, weights=layer))
-
-
 
     def predict(self, X):
         output = X
